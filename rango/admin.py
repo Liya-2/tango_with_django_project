@@ -4,6 +4,7 @@ from django.contrib import admin
 
 from django.contrib import admin
 from rango.models import Category, Page
+from rango.models import UserProfile
 
 
 class PageAdmin(admin.ModelAdmin):
@@ -20,6 +21,8 @@ class CategoryAdmin(admin.ModelAdmin):
 # Update the registration to include this customised interface
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Page, PageAdmin)
+# 9.5 make the UserProfile model data accessible via the Django admin web interface
+admin.site.register(UserProfile)
 
 
 
