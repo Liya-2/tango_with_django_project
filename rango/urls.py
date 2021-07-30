@@ -5,6 +5,8 @@ from rango import views
 app_name = 'rango'
 
 urlpatterns = [
+    path('logout/', views.user_logout, name='logout'),
+    path('restricted/', views.restricted, name='restricted'),
     path('login/', views.user_login, name='login'),
     path('register/', views.register, name='register'),
     path('category/<slug:category_name_slug>/add_page/', views.add_page, name='add_page'),

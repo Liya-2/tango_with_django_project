@@ -9,7 +9,8 @@ from rango.forms import CategoryForm, PageForm
 from django.shortcuts import redirect
 from django.urls import reverse
 from rango.forms import UserForm, UserProfileForm
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 
 
 def index(request):
@@ -60,6 +61,8 @@ def show_category(request, category_name_slug):
     return render(request, 'rango/category.html', context=context_dict)
 
 
+# add the restriction for registered user
+@login_required
 def add_category(request):
     form = CategoryForm()
 
@@ -69,13 +72,15 @@ def add_category(request):
         if form.is_valid():
             # Save the new category to the database.
             form.save(commit=True)
-            return redirect('/rango/')
+            return redirect(reverse('rango:index'))
         else:
             print(form.errors)
+            print(form.is_valid())
 
     return render(request, 'rango/add_category.html', {'form': form})
 
 
+@login_required
 def add_page(request, category_name_slug):
     try:
         category = Category.objects.get(slug=category_name_slug)
@@ -83,19 +88,21 @@ def add_page(request, category_name_slug):
         category = None
 
     if category is None:
-        return redirect('/rango/')
+        return redirect(reverse('rango:index'))
 
     form = PageForm()
+    print("****************")
 
     if request.method == 'POST':
         form = PageForm(request.POST)
-    if form.is_valid():
-        if category:
-            page = form.save(commit=False)
-            page.category = category
-            page.views = 0
-            page.save()
-            return redirect(reverse('rango:show_category', kwargs={'category_name_slug': category_name_slug}))
+
+        if form.is_valid():
+            if category:
+                page = form.save(commit=False)
+                page.category = category
+                page.views = 0
+                page.save()
+                return redirect(reverse('rango:show_category', kwargs={'category_name_slug': category_name_slug}))
         else:
             print(form.errors)
 
@@ -155,7 +162,17 @@ def user_login(request):
         return render(request, 'rango/login.html')
 
 
+@login_required
+def restricted(request):
+    # return HttpResponse("Since you're logged in, you can see this text!")
+    return render(request, 'rango/restricted.html')
 
+
+@login_required
+def user_logout(request):
+    logout(request)
+    # Take the user back to the homepage.
+    return redirect(reverse('rango:index'))
 
 
 
