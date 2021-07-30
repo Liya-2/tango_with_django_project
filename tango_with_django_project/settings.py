@@ -33,6 +33,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+# add for ch9:test
+LOGIN_URL = 'rango:login'
 
 # Application definition
 
